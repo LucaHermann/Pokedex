@@ -1,9 +1,10 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable react/display-name */
 import React from "react"
 import { Provider } from "react-redux"
 
 import createStore from "./src/state/createStore"
 
-// eslint-disable-next-line react/display-name,react/prop-types
 export default ({ element }) => {
   // Instantiating store in `wrapRootElement` handler ensures:
   //  - there is fresh store for each SSR page
