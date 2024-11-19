@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/client';
 import { useState } from 'react';
 import { GET_POKEMONS } from '../graphql/queries';
-
+import Pokecard from './Pokecard';
 interface Pokemon {
   id: number;
   name: string;
@@ -21,7 +21,8 @@ interface PokemonVariables {
 
 function Pokedex() {
   const [selectedGeneration, setSelectedGeneration] = useState(1);
-  
+  const [selectedPokemon, setSelectedPokemon] = useState<string | null>(null);
+
   // Define generation ranges
   const generationRanges = {
     1: { limit: 151, offset: 0 },    // Gen 1: 1-151
@@ -39,7 +40,21 @@ function Pokedex() {
     variables: generationRanges[selectedGeneration as keyof typeof generationRanges]
   });
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return (
+    <div className="min-h-screen bg-red-600 p-8">
+      <div className="max-w-7xl mx-auto bg-red-500 rounded-lg shadow-lg p-6 border-8 border-red-700">
+        <div className="flex flex-col items-center justify-center h-96">
+          <div className="w-24 h-24 relative animate-bounce">
+            <div className="absolute w-full h-full rounded-full bg-white border-8 border-gray-800">
+              <div className="absolute top-1/2 w-full h-[8px] bg-gray-800"></div>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border-4 border-gray-800 animate-pulse"></div>
+            </div>
+          </div>
+          <p className="mt-4 text-white text-xl font-bold">Loading Pokémon...</p>
+        </div>
+      </div>
+    </div>
+  );
   if (error) return <p>Error: {error.message}</p>;
 
   const generations = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -88,6 +103,7 @@ function Pokedex() {
                 <div 
                   key={pokemon.id} 
                   className="pokemon-card bg-white rounded-lg p-4 shadow-md hover:shadow-xl transition-transform hover:-translate-y-1 cursor-pointer"
+                  onClick={() => setSelectedPokemon(pokemon.name)}
                 >
                   <div className="relative pb-[100%]">
                     <img 
@@ -112,6 +128,13 @@ function Pokedex() {
           <div className="w-24 h-8 bg-gray-800 rounded-lg border-4 border-gray-700"></div>
         </div>
       </div>
+
+      {selectedPokemon && (
+        <Pokecard
+          pokemonName={selectedPokemon}
+          onClose={() => setSelectedPokemon(null)}
+        />
+      )}
     </div>
   );
 }

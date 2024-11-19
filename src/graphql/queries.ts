@@ -17,7 +17,6 @@ export const GET_POKEMON = gql`
     pokemon(name: $name) {
       id
       name
-      image
       height
       weight
       types {
@@ -40,6 +39,9 @@ export const GET_POKEMON = gql`
         move {
           name
         }
+      }
+      sprites {
+        front_default
       }
     }
   }
