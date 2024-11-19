@@ -1,18 +1,47 @@
 import { gql } from '@apollo/client';
 
+export const GET_POKEMONS = gql`
+  query GetPokemons($limit: Int!, $offset: Int!) {
+    pokemons(limit: $limit, offset: $offset) {
+      results {
+        id
+        name
+        image
+      }
+    }
+  }
+`;
+
 export const GET_POKEMON = gql`
-  query getPokemon($name: String!) {
+  query GetPokemon($name: String!) {
     pokemon(name: $name) {
       id
       name
-      sprites {
-        front_default
-      }
+      image
+      height
+      weight
       types {
         type {
+          name
+        }
+      }
+      stats {
+        base_stat
+        stat {
+          name
+        }
+      }
+      abilities {
+        ability {
+          name
+        }
+      }
+      moves {
+        move {
           name
         }
       }
     }
   }
 `;
+
