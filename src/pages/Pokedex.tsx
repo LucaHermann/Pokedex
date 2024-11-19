@@ -14,6 +14,11 @@ interface PokemonData {
   };
 }
 
+interface PokemonVariables {
+  limit: number;
+  offset: number;
+}
+
 function Pokedex() {
   const [selectedGeneration, setSelectedGeneration] = useState(1);
   
@@ -30,7 +35,7 @@ function Pokedex() {
     9: { limit: 103, offset: 905 },  // Gen 9: 906-1008
   };
 
-  const { data, loading, error } = useQuery<PokemonData>(GET_POKEMONS, {
+  const { data, loading, error } = useQuery<PokemonData, PokemonVariables>(GET_POKEMONS, {
     variables: generationRanges[selectedGeneration as keyof typeof generationRanges]
   });
 
@@ -40,29 +45,72 @@ function Pokedex() {
   const generations = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   return (
-    <div className="pokedex">
-      <div className="generation-selector">
-        <label htmlFor="generation">Select Generation: </label>
-        <select
-          id="generation"
-          value={selectedGeneration}
-          onChange={(e) => setSelectedGeneration(Number(e.target.value))}
-        >
-          {generations.map((gen) => (
-            <option key={gen} value={gen}>
-              Generation {gen}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="pokemon-grid">
-        {data?.pokemons.results.map((pokemon: Pokemon) => (
-          <div key={pokemon.id} className="pokemon-card">
-            <h2>{pokemon.name}</h2>
-            <img src={pokemon.image} alt={pokemon.name} />
+    <div className="min-h-screen bg-red-600 p-8">
+      <div className="max-w-7xl mx-auto bg-red-500 rounded-lg shadow-lg p-6 border-8 border-red-700">
+        {/* Top screen section */}
+        <div className="mb-8 flex items-center gap-4">
+          <div className="w-8 h-8 rounded-full bg-blue-400 border-4 border-white animate-pulse"></div>
+          <div className="flex gap-2">
+            <div className="w-4 h-4 rounded-full bg-red-400 border-2 border-red-800"></div>
+            <div className="w-4 h-4 rounded-full bg-yellow-400 border-2 border-yellow-600"></div>
+            <div className="w-4 h-4 rounded-full bg-green-400 border-2 border-green-600"></div>
           </div>
-        ))}
+          <div className="generation-selector bg-gray-200 rounded-lg p-2">
+            <label htmlFor="generation" className="font-bold text-gray-700 mr-2">Select Generation: </label>
+            <select
+              id="generation"
+              value={selectedGeneration}
+              onChange={(e) => setSelectedGeneration(Number(e.target.value))}
+              className="bg-white border-2 border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-blue-500"
+            >
+              {generations.map((gen) => (
+                <option key={gen} value={gen}>
+                  Generation {gen}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Main display screen */}
+        <div className="bg-green-100 rounded-lg p-6 border-4 border-gray-800 shadow-inner">
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-bounce">
+                <div className="w-16 h-16 rounded-full border-8 border-red-500 border-t-transparent animate-spin"></div>
+              </div>
+            </div>
+          ) : error ? (
+            <p className="text-red-600 text-center font-bold">Error: {error}</p>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {data?.pokemons.results.map((pokemon: Pokemon) => (
+                <div 
+                  key={pokemon.id} 
+                  className="pokemon-card bg-white rounded-lg p-4 shadow-md hover:shadow-xl transition-transform hover:-translate-y-1 cursor-pointer"
+                >
+                  <div className="relative pb-[100%]">
+                    <img 
+                      src={pokemon.image} 
+                      alt={pokemon.name}
+                      className="absolute inset-0 w-full h-full object-contain p-2"
+                    />
+                  </div>
+                  <h2 className="text-center mt-2 font-bold text-gray-800 capitalize">
+                    {pokemon.name}
+                  </h2>
+                  <div className="text-center text-sm text-gray-600">#{pokemon.id}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Bottom control panel */}
+        <div className="mt-6 flex justify-center gap-4">
+          <div className="w-12 h-12 rounded-full bg-gray-800 border-4 border-gray-700"></div>
+          <div className="w-24 h-8 bg-gray-800 rounded-lg border-4 border-gray-700"></div>
+        </div>
       </div>
     </div>
   );
