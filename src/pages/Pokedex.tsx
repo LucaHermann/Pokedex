@@ -1,23 +1,8 @@
 import { useQuery } from '@apollo/client';
 import { useState } from 'react';
 import { GET_POKEMONS } from '../graphql/queries';
-import Pokecard from './Pokecard';
-interface Pokemon {
-  id: number;
-  name: string;
-  image: string;
-}
-
-interface PokemonData {
-  pokemons: {
-    results: Pokemon[];
-  };
-}
-
-interface PokemonVariables {
-  limit: number;
-  offset: number;
-}
+import Pokecard from '../components/Pokecard';
+import { PokemonsData, PokemonVariables, Pokemons } from '../graphql/types';
 
 function Pokedex() {
   const [selectedGeneration, setSelectedGeneration] = useState(1);
@@ -36,7 +21,7 @@ function Pokedex() {
     9: { limit: 103, offset: 905 },  // Gen 9: 906-1008
   };
 
-  const { data, loading, error } = useQuery<PokemonData, PokemonVariables>(GET_POKEMONS, {
+  const { data, loading, error } = useQuery<PokemonsData, PokemonVariables>(GET_POKEMONS, {
     variables: generationRanges[selectedGeneration as keyof typeof generationRanges]
   });
 
@@ -99,25 +84,27 @@ function Pokedex() {
             <p className="text-red-600 text-center font-bold">Error: {error}</p>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {data?.pokemons.results.map((pokemon: Pokemon) => (
-                <div 
-                  key={pokemon.id} 
-                  className="pokemon-card bg-white rounded-lg p-4 shadow-md hover:shadow-xl transition-transform hover:-translate-y-1 cursor-pointer"
-                  onClick={() => setSelectedPokemon(pokemon.name)}
-                >
-                  <div className="relative pb-[100%]">
-                    <img 
-                      src={pokemon.image} 
-                      alt={pokemon.name}
-                      className="absolute inset-0 w-full h-full object-contain p-2"
-                    />
+              {data?.pokemons.results.map((pokemon: Pokemons) => {
+                return (
+                  <div 
+                    key={pokemon.id} 
+                    className="pokemon-card bg-white rounded-lg p-4 shadow-md hover:shadow-xl transition-transform hover:-translate-y-1 cursor-pointer"
+                    onClick={() => setSelectedPokemon(pokemon.name)}
+                  >
+                    <div className="relative pb-[100%]">
+                      <img 
+                        src={pokemon.image} 
+                        alt={pokemon.name}
+                        className="absolute inset-0 w-full h-full object-contain p-2"
+                      />
+                    </div>
+                    <h2 className="text-center mt-2 font-bold text-gray-800 capitalize">
+                      {pokemon.name}
+                    </h2>
+                    <div className="text-center text-sm text-gray-600">#{pokemon.id}</div>
                   </div>
-                  <h2 className="text-center mt-2 font-bold text-gray-800 capitalize">
-                    {pokemon.name}
-                  </h2>
-                  <div className="text-center text-sm text-gray-600">#{pokemon.id}</div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

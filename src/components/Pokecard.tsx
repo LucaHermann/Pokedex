@@ -1,24 +1,6 @@
 import { useQuery } from '@apollo/client';
 import { GET_POKEMON } from '../graphql/queries';
-
-interface PokecardProps {
-  pokemonName: string;
-  onClose: () => void;
-}
-
-interface PokemonDetails {
-  pokemon: {
-    id: number;
-    name: string;
-    height: number;
-    weight: number;
-    types: { type: { name: string } }[];
-    stats: { base_stat: number; stat: { name: string } }[];
-    abilities: { ability: { name: string } }[];
-    moves: { move: { name: string } }[];
-    sprites: { front_default: string };
-  };
-}
+import { PokecardProps, PokemonDetails } from '../graphql/types';
 
 function Pokecard({ pokemonName, onClose }: PokecardProps) {
   const { data, loading, error } = useQuery<PokemonDetails>(GET_POKEMON, {
