@@ -38,10 +38,11 @@ export const GET_POKEMON = gql`
       moves {
         move {
           name
-        }
+        } 
       }
       sprites {
         front_default
+        back_default
       }
     }
   }

@@ -128,7 +128,7 @@ function Pokecard({ pokemonName, onClose }: PokecardProps) {
 
           {/* Moves */}
           <div className="mt-4">
-            <h3 className="font-bold mb-2 text-yellow-900">Abilities</h3>
+            <h3 className="font-bold mb-2 text-yellow-900">Moves </h3>
             <div className="flex flex-wrap justify-center gap-2">
               {pokemon.moves.map(({ move }) => (
                 <span

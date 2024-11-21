@@ -44,7 +44,7 @@ export interface PokemonDetails {
     types: { type: { name: string } }[];
     stats: { base_stat: number; stat: { name: string } }[];
     abilities: { ability: { name: string } }[];
-    moves: { move: { name: string } }[];
-    sprites: { front_default: string };
+    moves: { move: { name: string, accuracy: number, pp: number, power: number } }[];
+    sprites: { front_default: string, back_default: string };
   };
 }
