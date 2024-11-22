@@ -4,11 +4,9 @@ import { PokecardProps, GetPokemonResponse } from '../graphql/types';
 
 function Pokecard({ pokemonName, onClose }: PokecardProps) {
   const { data, loading, error } = useQuery<GetPokemonResponse>(GET_POKEMON, {
-    variables: { name: pokemonName },
+    variables: { name: pokemonName.toLocaleLowerCase() },
   });
   
-  console.log(pokemonName);
-
   // Close on backdrop click
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -133,7 +131,7 @@ function Pokecard({ pokemonName, onClose }: PokecardProps) {
           <div className="mt-4">
             <h3 className="font-bold mb-2 text-yellow-900">Moves </h3>
             <div className="flex flex-wrap justify-center gap-2">
-              {moves.map(({ move }) => (
+              {moves.slice(0, 4).map(({ move }) => (
                 <span
                   key={move.name}
                   className="px-3 py-1 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-full text-sm capitalize text-yellow-900 shadow-sm"

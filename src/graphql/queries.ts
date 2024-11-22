@@ -47,6 +47,5 @@ query GetPokemon($name: String!) {
     }
   }
 }
-
 `;
 
