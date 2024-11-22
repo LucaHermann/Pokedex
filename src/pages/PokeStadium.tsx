@@ -245,7 +245,7 @@ const PokeStadium = () => {
 
                 {/* Pokemon Sprites */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  {/* Pokemon 1 (Bottom Left) - Adjusted size and positioning */}
+                  {/* Pokemon 1 (Bottom Left) */}
                   <div className="absolute bottom-20 left-24">
                     <img
                       src={pokemon1Data.pokemon.sprites?.back_default || ''}
@@ -254,7 +254,6 @@ const PokeStadium = () => {
                         ${pokemon1Animating === 'attacking' ? 'animate-slide-right' : ''}
                         ${pokemon1Animating === 'hit' ? 'animate-damage-glow' : ''}
                         ${pokemon1Animating === 'fainted' ? 'animate-faint' : ''}
-                        ${pokemon1HP === 0 && pokemon1Animating !== 'fainted' ? 'opacity-0' : 'opacity-100'}
                       `}
                     />
                   </div>
@@ -268,7 +267,6 @@ const PokeStadium = () => {
                         ${pokemon2Animating === 'attacking' ? 'animate-slide-left' : ''}
                         ${pokemon2Animating === 'hit' ? 'animate-damage-glow' : ''}
                         ${pokemon2Animating === 'fainted' ? 'animate-faint' : ''}
-                        ${pokemon2HP === 0 && pokemon2Animating !== 'fainted' ? 'opacity-0' : 'opacity-100'}
                       `}
                     />
                   </div>
