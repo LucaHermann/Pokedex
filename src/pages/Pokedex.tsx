@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/client';
 import { useState } from 'react';
 import { GET_POKEMONS } from '../graphql/queries';
 import Pokecard from '../components/Pokecard';
-import { PokemonsData, PokemonVariables, Pokemons } from '../graphql/types';
+import { PokemonListResponse, PaginationVars } from '../graphql/types';
 
 function Pokedex() {
   const [selectedGeneration, setSelectedGeneration] = useState(1);
@@ -21,7 +21,7 @@ function Pokedex() {
     9: { limit: 103, offset: 905 },  // Gen 9: 906-1008
   };
 
-  const { data, loading, error } = useQuery<PokemonsData, PokemonVariables>(GET_POKEMONS, {
+  const { data, loading, error } = useQuery<PokemonListResponse, PaginationVars>(GET_POKEMONS, {
     variables: generationRanges[selectedGeneration as keyof typeof generationRanges]
   });
 
@@ -32,7 +32,7 @@ function Pokedex() {
           <div className="w-24 h-24 relative animate-bounce">
             <div className="absolute w-full h-full rounded-full bg-white border-8 border-gray-800">
               <div className="absolute top-1/2 w-full h-[8px] bg-gray-800"></div>
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border-4 border-gray-800 animate-pulse"></div>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border-4 border-gray-800"></div>
             </div>
           </div>
           <p className="mt-4 text-white text-xl font-bold">Loading Pokémon...</p>
@@ -84,7 +84,7 @@ function Pokedex() {
             <p className="text-red-600 text-center font-bold">Error: {error}</p>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {data?.pokemons.results.map((pokemon: Pokemons) => {
+              {data?.pokemons.results.map((pokemon) => {
                 return (
                   <div 
                     key={pokemon.id} 

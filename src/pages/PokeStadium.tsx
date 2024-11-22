@@ -1,19 +1,19 @@
 import { useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_POKEMON } from '../graphql/queries';
-import { PokemonDetails } from '../graphql/types';
+import { Pokemon } from '../graphql/types';
 
 const PokeStadium = () => {
   const [pokemon1Name, setPokemon1Name] = useState<string>('');
   const [pokemon2Name, setPokemon2Name] = useState<string>('');
   const [showBattle, setShowBattle] = useState<boolean>(false);
 
-  const { data: pokemon1Data, loading: loading1 } = useQuery<PokemonDetails>(GET_POKEMON, {
+  const { data: pokemon1Data, loading: loading1 } = useQuery<Pokemon>(GET_POKEMON, {
     variables: { name: pokemon1Name.toLowerCase() },
     skip: !pokemon1Name,
   });
 
-  const { data: pokemon2Data, loading: loading2 } = useQuery<PokemonDetails>(GET_POKEMON, {
+  const { data: pokemon2Data, loading: loading2 } = useQuery<Pokemon>(GET_POKEMON, {
     variables: { name: pokemon2Name.toLowerCase() },
     skip: !pokemon2Name,
   });
@@ -54,27 +54,33 @@ const PokeStadium = () => {
           {/* HP Bars */}
           <div className="flex justify-between mb-8">
             <div className="w-1/3">
-              <p className="font-bold mb-2">{pokemon1Data.pokemon.name}</p>
+              <p className="font-bold mb-2">{pokemon1Data?.name}</p>
               <div className="w-full bg-gray-200 rounded-full h-4">
                 <div
                   className="bg-green-500 rounded-full h-4"
                   style={{
-                    width: `${(pokemon1Data.pokemon.stats.find(
-                      (stat) => stat.stat.name === 'hp'
-                    )?.base_stat || 0)}%`,
+                    width: `${Math.min(
+                      (pokemon1Data?.stats?.find(
+                        (stat) => stat.stat.name === 'hp'
+                      )?.base_stat || 0),
+                      100
+                    )}%`,
                   }}
                 ></div>
               </div>
             </div>
             <div className="w-1/3">
-              <p className="font-bold mb-2">{pokemon2Data.pokemon.name}</p>
+              <p className="font-bold mb-2">{pokemon2Data?.name}</p>
               <div className="w-full bg-gray-200 rounded-full h-4">
                 <div
                   className="bg-green-500 rounded-full h-4"
                   style={{
-                    width: `${(pokemon2Data.pokemon.stats.find(
-                      (stat) => stat.stat.name === 'hp'
-                    )?.base_stat || 0)}%`,
+                    width: `${Math.min(
+                      (pokemon2Data?.stats?.find(
+                        (stat) => stat.stat.name === 'hp'
+                      )?.base_stat || 0),
+                      100
+                    )}%`,
                   }}
                 ></div>
               </div>
@@ -84,13 +90,13 @@ const PokeStadium = () => {
           {/* Sprites */}
           <div className="flex justify-between items-center mb-8">
             <img
-              src={pokemon1Data.pokemon.sprites.back_default}
-              alt={pokemon1Data.pokemon.name}
+              src={pokemon1Data.sprites.back_default || ''}
+              alt={pokemon1Data.name}
               className="w-48 h-48 object-contain"
             />
             <img
-              src={pokemon2Data.pokemon.sprites.front_default}
-              alt={pokemon2Data.pokemon.name}
+              src={pokemon2Data.sprites.front_default || ''}
+              alt={pokemon2Data.name}
               className="w-48 h-48 object-contain"
             />
           </div>
@@ -99,24 +105,24 @@ const PokeStadium = () => {
           <div className="flex justify-between">
             <div className="w-1/3">
               <div className="grid grid-cols-2 gap-2">
-                {pokemon1Data.pokemon.moves.slice(0, 4).map((move, index) => (
+                {pokemon1Data.moves.slice(0, 4).map((move, index) => (
                   <button
                     key={index}
                     className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
                   >
-                    {move.move.name} acc: ({move.move.accuracy}%) {move.move.pp}PP {move.move.power}DMG
+                    {move.move.name}
                   </button>
                 ))}
               </div>
             </div>
             <div className="w-1/3">
               <div className="grid grid-cols-2 gap-2">
-                {pokemon2Data.pokemon.moves.slice(0, 4).map((move, index) => (
+                {pokemon2Data.moves.slice(0, 4).map((move, index) => (
                   <button
                     key={index}
                     className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
                   >
-                    {move.move.name} acc: ({move.move.accuracy}%) {move.move.pp}PP {move.move.power}DMG
+                    {move.move.name}
                   </button>
                 ))}
               </div>

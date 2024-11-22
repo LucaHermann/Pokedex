@@ -1,11 +1,13 @@
 import { useQuery } from '@apollo/client';
 import { GET_POKEMON } from '../graphql/queries';
-import { PokecardProps, PokemonDetails } from '../graphql/types';
+import { PokecardProps, GetPokemonResponse } from '../graphql/types';
 
 function Pokecard({ pokemonName, onClose }: PokecardProps) {
-  const { data, loading, error } = useQuery<PokemonDetails>(GET_POKEMON, {
+  const { data, loading, error } = useQuery<GetPokemonResponse>(GET_POKEMON, {
     variables: { name: pokemonName },
   });
+  
+  console.log(pokemonName);
 
   // Close on backdrop click
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -18,7 +20,8 @@ function Pokecard({ pokemonName, onClose }: PokecardProps) {
   if (error) return null;
   if (!data) return null;
 
-  const { pokemon } = data;
+
+  const { id, name, height, weight, sprites, types, stats, abilities, moves } = data?.pokemon || {};
 
   return (
     <div
@@ -51,26 +54,26 @@ function Pokecard({ pokemonName, onClose }: PokecardProps) {
           <div className="relative mb-4">
             <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent rounded-lg" />
             <img
-              src={pokemon.sprites.front_default}
-              alt={pokemon.name}
+              src={sprites.front_default}
+                alt={name}
               className="w-48 h-48 mx-auto relative z-0 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg p-2"
             />
           </div>
           
-          <h2 className="text-2xl font-bold capitalize mb-2 text-yellow-900">{pokemon.name}</h2>
-          <p className="text-yellow-700 mb-4 font-semibold">#{pokemon.id}</p>
+          <h2 className="text-2xl font-bold capitalize mb-2 text-yellow-900">{name}</h2>
+            <p className="text-yellow-700 mb-4 font-semibold">#{id}</p>
         </div>
 
         {/* Scrollable content */}
         <div className="relative">
           {/* Types */}
           <div className="flex justify-center gap-2 mb-4">
-            {pokemon.types.map(({ type }) => (
+              {types.map(({ type }) => (
               <span
                 key={type.name}
                 className="px-3 py-1 rounded-full text-white text-sm capitalize shadow-inner"
                 style={{
-                  backgroundColor: getTypeColor(type.name),
+                    backgroundColor: getTypeColor(type.name),
                   textShadow: '1px 1px 1px rgba(0,0,0,0.3)'
                 }}
               >
@@ -83,20 +86,20 @@ function Pokecard({ pokemonName, onClose }: PokecardProps) {
           <div className="grid grid-cols-2 gap-4 mb-4 bg-yellow-50/50 rounded-lg p-3">
             <div>
               <p className="text-yellow-800">Height</p>
-              <p className="font-bold text-yellow-900">{pokemon.height / 10}m</p>
+              <p className="font-bold text-yellow-900">{height / 10}m</p>
             </div>
             <div>
               <p className="text-yellow-800">Weight</p>
-              <p className="font-bold text-yellow-900">{pokemon.weight / 10}kg</p>
+              <p className="font-bold text-yellow-900">{weight / 10}kg</p>
             </div>
           </div>
 
           {/* Base Stats */}
           <div className="space-y-2 bg-yellow-50/50 rounded-lg p-3">
-            {pokemon.stats.map(({ base_stat, stat }) => (
+            {stats.map(({ base_stat, stat }) => (
               <div key={stat.name} className="flex items-center">
                 <span className="w-24 text-left text-yellow-800 capitalize font-medium">
-                  {stat.name.replace('-', ' ')}:
+                    {stat.name.replace('-', ' ')}:
                 </span>
                 <div className="flex-1 ml-4">
                   <div className="h-2 bg-yellow-200 rounded-full">
@@ -115,7 +118,7 @@ function Pokecard({ pokemonName, onClose }: PokecardProps) {
           <div className="mt-4">
             <h3 className="font-bold mb-2 text-yellow-900">Abilities</h3>
             <div className="flex flex-wrap justify-center gap-2">
-              {pokemon.abilities.map(({ ability }) => (
+              {abilities.map(({ ability }) => (
                 <span
                   key={ability.name}
                   className="px-3 py-1 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-full text-sm capitalize text-yellow-900 shadow-sm"
@@ -130,7 +133,7 @@ function Pokecard({ pokemonName, onClose }: PokecardProps) {
           <div className="mt-4">
             <h3 className="font-bold mb-2 text-yellow-900">Moves </h3>
             <div className="flex flex-wrap justify-center gap-2">
-              {pokemon.moves.map(({ move }) => (
+              {moves.map(({ move }) => (
                 <span
                   key={move.name}
                   className="px-3 py-1 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-full text-sm capitalize text-yellow-900 shadow-sm"
