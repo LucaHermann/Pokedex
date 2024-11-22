@@ -138,7 +138,6 @@ const PokeStadium = () => {
             <div className="w-4 h-4 rounded-full bg-yellow-400 border-2 border-yellow-600"></div>
             <div className="w-4 h-4 rounded-full bg-green-400 border-2 border-green-600"></div>
           </div>
-          <h1 className="text-4xl font-bold text-white">Pokémon Stadium</h1>
         </div>
 
         {/* Main battle screen */}
@@ -201,11 +200,11 @@ const PokeStadium = () => {
           {(pokemonErrors.pokemon1Error || pokemonErrors.pokemon2Error) && (
             <div className="text-red-500 font-bold text-center mb-4">
               {pokemonErrors.pokemon1Error && pokemonErrors.pokemon2Error ? (
-                <p>Both Pokémon not found! Please enter valid Pokémon names.</p>
+                <p>Both Pokémon not found! You can help yourself with the pokedex.</p>
               ) : pokemonErrors.pokemon1Error ? (
-                <p>Pokemon1 doesn't have a valid Pokémon name. Please try again.</p>
+                <p>Pokemon1 doesn't have a valid Pokémon name. You can help yourself with the pokedex.</p>
               ) : (
-                <p>Pokemon2 doesn't have a valid Pokémon name. Please try again.</p>
+                <p>Pokemon2 doesn't have a valid Pokémon name. You can help yourself with the pokedex.</p>
               )}
             </div>
           )}
