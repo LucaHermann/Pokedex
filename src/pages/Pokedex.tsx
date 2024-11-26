@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { GET_POKEMONS } from '../graphql/queries';
 import Pokecard from '../components/Pokecard';
 import { PokemonListResponse, PaginationVars } from '../graphql/types';
+import Select from 'react-select';
 
 function Pokedex() {
   const [selectedGeneration, setSelectedGeneration] = useState(1);
@@ -44,6 +45,11 @@ function Pokedex() {
 
   const generations = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
+  const generationOptions = generations.map(gen => ({
+    value: gen,
+    label: `Generation ${gen}`
+  }));
+
   return (
     <div className="min-h-screen bg-red-600 p-8">
       <div className="max-w-7xl mx-auto bg-red-500 rounded-lg shadow-lg p-6 border-8 border-red-700">
@@ -57,18 +63,47 @@ function Pokedex() {
           </div>
           <div className="generation-selector bg-gray-200 rounded-lg p-2">
             <label htmlFor="generation" className="font-bold text-gray-700 mr-2">Select Generation: </label>
-            <select
+            <Select
               id="generation"
-              value={selectedGeneration}
-              onChange={(e) => setSelectedGeneration(Number(e.target.value))}
-              className="bg-white border-2 border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-blue-500"
-            >
-              {generations.map((gen) => (
-                <option key={gen} value={gen}>
-                  Generation {gen}
-                </option>
-              ))}
-            </select>
+              value={generationOptions.find(option => option.value === selectedGeneration)}
+              onChange={(option) => setSelectedGeneration(option?.value || 1)}
+              options={generationOptions}
+              className="w-58"
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  fontFamily: '"Press Start 2P", system-ui, sans-serif',
+                }),
+                option: (base) => ({
+                  ...base,
+                  fontFamily: '"Press Start 2P", system-ui, sans-serif',
+                  backgroundColor: 'white',
+                  color: 'black',
+                  '&:hover': {
+                    backgroundColor: '#f3f4f6'
+                  }
+                }),
+                menu: (base) => ({
+                  ...base,
+                  backgroundColor: 'white'
+                }),
+                singleValue: (base) => ({
+                  ...base,
+                  fontFamily: '"Press Start 2P", system-ui, sans-serif',
+                  color: 'black'
+                })
+              }}
+              theme={(theme) => ({
+                ...theme,
+                colors: {
+                  ...theme.colors,
+                  primary: '#ef4444',
+                  primary25: '#fee2e2',
+                  primary50: '#fecaca',
+                  primary75: '#fca5a5'
+                }
+              })}
+            />
           </div>
         </div>
 
