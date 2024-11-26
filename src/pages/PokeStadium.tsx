@@ -127,16 +127,18 @@ const PokeStadium = () => {
    setCurrentTurn(currentTurn === 1 ? 2 : 1);
   };
 
+  console.log(pokemon1Data);
+  
   return (
     <div className="min-h-screen bg-red-600 p-8">
       <div className="max-w-7xl mx-auto bg-red-500 rounded-lg shadow-lg p-6 border-8 border-red-700">
         {/* Top screen section with LED lights */}
         <div className="mb-8 flex items-center gap-4">
-          <div className="w-8 h-8 rounded-full bg-blue-400 border-4 border-white animate-pulse"></div>
+          <div className="w-8 h-8 rounded-full bg-blue-400 border-4 border-white animate-pulse"/>
           <div className="flex gap-2">
-            <div className="w-4 h-4 rounded-full bg-red-400 border-2 border-red-800"></div>
-            <div className="w-4 h-4 rounded-full bg-yellow-400 border-2 border-yellow-600"></div>
-            <div className="w-4 h-4 rounded-full bg-green-400 border-2 border-green-600"></div>
+            <div className="w-4 h-4 rounded-full bg-red-400 border-2 border-red-800"/>
+            <div className="w-4 h-4 rounded-full bg-yellow-400 border-2 border-yellow-600"/>
+            <div className="w-4 h-4 rounded-full bg-green-400 border-2 border-green-600"/>
           </div>
         </div>
 
@@ -276,23 +278,39 @@ const PokeStadium = () => {
               {/* Battle Controls */}
               <div className="bg-gray-100 rounded-lg p-4 border-2 border-gray-200">
                 {!isBattleComplete ? (
-                  <div className="grid grid-cols-2 gap-4">
-                    <button
-                      className={`bg-red-500 text-white px-6 py-3 rounded-lg transition-all transform hover:-translate-y-1 font-bold 
-                        ${currentTurn === 1 ? 'hover:bg-red-600' : 'opacity-50 cursor-not-allowed'}`}
-                      onClick={() => handleAttack(1)}
-                      disabled={currentTurn !== 1}
-                    >
-                      {pokemon1Data.pokemon_v2_pokemon[0].name.charAt(0).toUpperCase() + pokemon1Data.pokemon_v2_pokemon[0].name.slice(1)} Attack!
-                    </button>
-                    <button
-                      className={`bg-blue-500 text-white px-6 py-3 rounded-lg transition-all transform hover:-translate-y-1 font-bold
-                        ${currentTurn === 2 ? 'hover:bg-blue-600' : 'opacity-50 cursor-not-allowed'}`}
-                      onClick={() => handleAttack(2)}
-                      disabled={currentTurn !== 2}
-                    >
-                      {pokemon2Data.pokemon_v2_pokemon[0].name.charAt(0).toUpperCase() + pokemon2Data.pokemon_v2_pokemon[0].name.slice(1)} Attack!
-                    </button>
+                  <div className="relative">
+                    {/* Message de tour */}
+                    <div className="text-center mb-4">
+                      <p className="text-xl font-bold text-gray-800">
+                        {currentTurn === 1 
+                          ? `What should ${pokemon1Data.pokemon_v2_pokemon[0].name.toUpperCase()} do?`
+                          : `What should ${pokemon2Data.pokemon_v2_pokemon[0].name.toUpperCase()} do?`
+                        }
+                      </p>
+                    </div>
+
+                    {/* Grille d'attaques style Pokémon */}
+                    <div className="grid grid-cols-2 gap-2 bg-white rounded-lg p-3 border-4 border-gray-300">
+                      {(currentTurn === 1 ? pokemon1Data : pokemon2Data)
+                        .pokemon_v2_pokemon[0].pokemon_v2_pokemonmoves
+                        .slice(0, 4)
+                        .map(({ pokemon_v2_move }, i) => (
+                          <button
+                            key={i}
+                            className={`
+                              text-left px-4 py-3 rounded-lg
+                              ${currentTurn === 1 ? 'hover:bg-red-100' : 'hover:bg-blue-100'}
+                              transition-colors duration-200
+                              border-2 border-gray-200
+                              disabled:opacity-50 disabled:cursor-not-allowed
+                              font-pokemon text-lg
+                            `}
+                            onClick={() => handleAttack(currentTurn as 1 | 2)}
+                          >
+                            ▶ {pokemon_v2_move.name.replace('-', ' ')}
+                          </button>
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center">

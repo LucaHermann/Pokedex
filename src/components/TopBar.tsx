@@ -14,7 +14,7 @@ const TopBar = () => {
           to="/stadium" 
           className="text-white hover:bg-gray-700 px-4 py-2 rounded-md"
         >
-          Poké Stadium
+          PokéStadium
         </Link>
       </div>
     </nav>

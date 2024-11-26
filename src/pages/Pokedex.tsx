@@ -25,16 +25,14 @@ function Pokedex() {
     variables: generationRanges[selectedGeneration as keyof typeof generationRanges]
   });
 
-  console.log(data?.pokemon_v2_pokemon[0].pokemon_v2_pokemonsprites[0].sprites);
-
   if (loading) return (
     <div className="min-h-screen bg-red-600 p-8">
       <div className="max-w-7xl mx-auto bg-red-500 rounded-lg shadow-lg p-6 border-8 border-red-700">
         <div className="flex flex-col items-center justify-center h-96">
           <div className="w-24 h-24 relative animate-bounce">
             <div className="absolute w-full h-full rounded-full bg-white border-8 border-gray-800">
-              <div className="absolute top-1/2 w-full h-[8px] bg-gray-800"></div>
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border-4 border-gray-800"></div>
+              <div className="absolute top-1/2 w-full h-[8px] bg-gray-800" />
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border-4 border-gray-800" />
             </div>
           </div>
           <p className="mt-4 text-white text-xl font-bold">Loading Pokémon...</p>
@@ -51,11 +49,11 @@ function Pokedex() {
       <div className="max-w-7xl mx-auto bg-red-500 rounded-lg shadow-lg p-6 border-8 border-red-700">
         {/* Top screen section */}
         <div className="mb-8 flex items-center gap-4">
-          <div className="w-8 h-8 rounded-full bg-blue-400 border-4 border-white animate-pulse"></div>
+          <div className="w-8 h-8 rounded-full bg-blue-400 border-4 border-white animate-pulse"/>
           <div className="flex gap-2">
-            <div className="w-4 h-4 rounded-full bg-red-400 border-2 border-red-800"></div>
-            <div className="w-4 h-4 rounded-full bg-yellow-400 border-2 border-yellow-600"></div>
-            <div className="w-4 h-4 rounded-full bg-green-400 border-2 border-green-600"></div>
+            <div className="w-4 h-4 rounded-full bg-red-400 border-2 border-red-800"/>
+            <div className="w-4 h-4 rounded-full bg-yellow-400 border-2 border-yellow-600"/>
+            <div className="w-4 h-4 rounded-full bg-green-400 border-2 border-green-600"/>
           </div>
           <div className="generation-selector bg-gray-200 rounded-lg p-2">
             <label htmlFor="generation" className="font-bold text-gray-700 mr-2">Select Generation: </label>
@@ -79,7 +77,7 @@ function Pokedex() {
           {loading ? (
             <div className="flex justify-center items-center h-64">
               <div className="animate-bounce">
-                <div className="w-16 h-16 rounded-full border-8 border-red-500 border-t-transparent animate-spin"></div>
+                <div className="w-16 h-16 rounded-full border-8 border-red-500 border-t-transparent animate-spin"/>
               </div>
             </div>
           ) : error ? (
@@ -113,8 +111,8 @@ function Pokedex() {
 
         {/* Bottom control panel */}
         <div className="mt-6 flex justify-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-gray-800 border-4 border-gray-700"></div>
-          <div className="w-24 h-8 bg-gray-800 rounded-lg border-4 border-gray-700"></div>
+          <div className="w-12 h-12 rounded-full bg-gray-800 border-4 border-gray-700"/>
+          <div className="w-24 h-8 bg-gray-800 rounded-lg border-4 border-gray-700"/>
         </div>
       </div>
 

@@ -5,6 +5,9 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
+    fontFamily: {
+      'sans': ['"Press Start 2P"', 'system-ui', '-apple-system', 'sans-serif'],
+    },
     extend: {
       keyframes: {
         shake: {
