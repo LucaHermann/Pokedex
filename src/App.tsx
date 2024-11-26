@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Configuration Apollo Client pour GraphQL
 const apolloClient = new ApolloClient({
-  uri: 'https://graphql-pokeapi.vercel.app/api/graphql', // API GraphQL pour les Pokémon
+  uri: 'https://beta.pokeapi.co/graphql/v1beta', // API GraphQL pour les Pokémon
   cache: new InMemoryCache(),
 });
 

@@ -2,11 +2,11 @@ import { gql } from '@apollo/client';
 
 export const GET_POKEMONS = gql`
 query GetPokemons($limit: Int!, $offset: Int!) {
-  pokemons(limit: $limit, offset: $offset) {
-    results {
-      id
-      name
-      image
+  pokemon_v2_pokemon(limit: $limit, offset: $offset) {
+    id
+    name
+    pokemon_v2_pokemonsprites {
+      sprites
     }
   }
 }
@@ -15,35 +15,37 @@ query GetPokemons($limit: Int!, $offset: Int!) {
 
 export const GET_POKEMON = gql`
 query GetPokemon($name: String!) {
-  pokemon(name: $name) {
+  pokemon_v2_pokemon(where: {name: {_eq: $name}}) {
     id
     name
     height
     weight
-    types {
-      type {
+    pokemon_v2_pokemonsprites {
+      sprites
+    }
+    pokemon_v2_pokemontypes {
+      pokemon_v2_type {
         name
       }
     }
-    stats {
+    pokemon_v2_pokemonstats {
       base_stat
-      stat {
+      pokemon_v2_stat {
         name
       }
     }
-    abilities {
-      ability {
+    pokemon_v2_pokemonabilities {
+      pokemon_v2_ability {
         name
       }
     }
-    moves {
-      move {
+    pokemon_v2_pokemonmoves {
+      pokemon_v2_move {
         name
+        accuracy
+        pp
+        power
       }
-    }
-    sprites {
-      front_default
-      back_default
     }
   }
 }

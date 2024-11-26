@@ -19,7 +19,7 @@ function Pokecard({ pokemonName, onClose }: PokecardProps) {
   if (!data) return null;
 
 
-  const { id, name, height, weight, sprites, types, stats, abilities, moves } = data?.pokemon || {};
+  const { id, name, height, weight, pokemon_v2_pokemonsprites, pokemon_v2_pokemontypes, pokemon_v2_pokemonstats, pokemon_v2_pokemonabilities, pokemon_v2_pokemonmoves } = data?.pokemon_v2_pokemon[0] || {};
 
   return (
     <div
@@ -28,31 +28,11 @@ function Pokecard({ pokemonName, onClose }: PokecardProps) {
     >
       <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl max-w-md w-full p-6 relative transform transition-all shadow-lg border-8 border-yellow-400 my-8 max-h-[90vh] overflow-y-auto">
         <div className="text-center relative top-0 bg-gradient-to-br from-yellow-50 to-yellow-100 pt-2 pb-4 z-10">
-          {/* Close button */}
-          <button
-            onClick={onClose}
-            className="absolute top-0 right-0 text-yellow-800 hover:text-yellow-600"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-
           {/* Image container */}
           <div className="relative mb-4">
             <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent rounded-lg" />
             <img
-              src={sprites.front_default}
+              src={pokemon_v2_pokemonsprites[0].sprites.front_default}
                 alt={name}
               className="w-48 h-48 mx-auto relative z-0 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg p-2"
             />
@@ -66,16 +46,16 @@ function Pokecard({ pokemonName, onClose }: PokecardProps) {
         <div className="relative">
           {/* Types */}
           <div className="flex justify-center gap-2 mb-4">
-              {types.map(({ type }) => (
+              {pokemon_v2_pokemontypes.map(({ pokemon_v2_type }) => (
               <span
-                key={type.name}
+                key={pokemon_v2_type.name}
                 className="px-3 py-1 rounded-full text-white text-sm capitalize shadow-inner"
                 style={{
-                    backgroundColor: getTypeColor(type.name),
+                    backgroundColor: getTypeColor(pokemon_v2_type.name),
                   textShadow: '1px 1px 1px rgba(0,0,0,0.3)'
                 }}
               >
-                {type.name}
+                {pokemon_v2_type.name}
               </span>
             ))}
           </div>
@@ -94,10 +74,10 @@ function Pokecard({ pokemonName, onClose }: PokecardProps) {
 
           {/* Base Stats */}
           <div className="space-y-2 bg-yellow-50/50 rounded-lg p-3">
-            {stats.map(({ base_stat, stat }) => (
-              <div key={stat.name} className="flex items-center">
+            {pokemon_v2_pokemonstats.map(({ base_stat, pokemon_v2_stat }) => (
+              <div key={pokemon_v2_stat.name} className="flex items-center">
                 <span className="w-24 text-left text-yellow-800 capitalize font-medium">
-                    {stat.name.replace('-', ' ')}:
+                    {pokemon_v2_stat.name.replace('-', ' ')}:
                 </span>
                 <div className="flex-1 ml-4">
                   <div className="h-2 bg-yellow-200 rounded-full">
@@ -116,12 +96,12 @@ function Pokecard({ pokemonName, onClose }: PokecardProps) {
           <div className="mt-4">
             <h3 className="font-bold mb-2 text-yellow-900">Abilities</h3>
             <div className="flex flex-wrap justify-center gap-2">
-              {abilities.map(({ ability }) => (
+                {pokemon_v2_pokemonabilities.map(({ pokemon_v2_ability }) => (
                 <span
-                  key={ability.name}
+                  key={pokemon_v2_ability.name}
                   className="px-3 py-1 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-full text-sm capitalize text-yellow-900 shadow-sm"
                 >
-                  {ability.name.replace('-', ' ')}
+                  {pokemon_v2_ability.name.replace('-', ' ')}
                 </span>
               ))}
             </div>
@@ -131,12 +111,12 @@ function Pokecard({ pokemonName, onClose }: PokecardProps) {
           <div className="mt-4">
             <h3 className="font-bold mb-2 text-yellow-900">Moves </h3>
             <div className="flex flex-wrap justify-center gap-2">
-              {moves.slice(0, 4).map(({ move }) => (
+              {pokemon_v2_pokemonmoves.slice(0, 4).map(({ pokemon_v2_move }, i) => (
                 <span
-                  key={move.name}
+                  key={i}
                   className="px-3 py-1 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-full text-sm capitalize text-yellow-900 shadow-sm"
                 >
-                  {move.name.replace('-', ' ')}
+                  {pokemon_v2_move.name.replace('-', ' ')}
                 </span>
               ))}
             </div>
