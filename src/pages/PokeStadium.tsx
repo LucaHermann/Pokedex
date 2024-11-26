@@ -24,7 +24,7 @@ const PokeStadium = () => {
     variables: { name: pokemon1Name.toLowerCase() },
     skip: !showBattle,
     onCompleted: (data) => {
-      if (!data.pokemon?.sprites) {
+      if (!data.pokemon_v2_pokemon) {
         setPokemonErrors(prev => ({ ...prev, pokemon1Error: true }));
         setPokemon1Name('');
         setShowBattle(false);
@@ -36,7 +36,7 @@ const PokeStadium = () => {
     variables: { name: pokemon2Name.toLowerCase() },
     skip: !showBattle,
     onCompleted: (data) => {
-      if (!data.pokemon?.sprites) {
+      if (!data.pokemon_v2_pokemon) {
         setPokemonErrors(prev => ({ ...prev, pokemon2Error: true }));
         setPokemon2Name('');
         setShowBattle(false);
@@ -182,7 +182,8 @@ const PokeStadium = () => {
             ) : (
               <div className="flex gap-4">
                 <button
-                  className="bg-yellow-500 text-white px-8 py-3 rounded-lg hover:bg-yellow-600 transition-all transform hover:-translate-y-1 font-bold"
+                  disabled={!isBattleComplete}
+                  className="bg-yellow-500 text-white px-8 py-3 rounded-lg transition-all transform font-bold disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:bg-yellow-500 hover:bg-yellow-600 hover:-translate-y-1"
                   onClick={handleResetBattle}
                 >
                   Reset Battle
@@ -210,14 +211,14 @@ const PokeStadium = () => {
           )}
 
           {/* Battle Arena */}
-          {showBattle && pokemon1Data?.pokemon?.sprites && pokemon2Data?.pokemon?.sprites && !pokemonErrors.pokemon1Error && !pokemonErrors.pokemon2Error && (
+          {showBattle && pokemon1Data?.pokemon_v2_pokemon[0].pokemon_v2_pokemonsprites && pokemon2Data?.pokemon_v2_pokemon[0].pokemon_v2_pokemonsprites && !pokemonErrors.pokemon1Error && !pokemonErrors.pokemon2Error && (
             <div className="bg-white rounded-lg p-6 shadow-lg border-4 border-gray-200">
               {/* Battle Scene */}
               <div className="relative h-[400px] mb-8 bg-gradient-to-b from-sky-200 to-green-200 rounded-lg overflow-hidden">
                 {/* Pokemon 2 HP Bar (Top Right) */}
                 <div className="absolute top-2 right-4 w-56">
                   <div className="bg-white rounded-lg p-2 shadow-md">
-                    <p className="font-bold mb-1 text-gray-800">{pokemon2Data.pokemon.name}</p>
+                    <p className="font-bold mb-1 text-gray-800">{pokemon2Data.pokemon_v2_pokemon[0].name.charAt(0).toUpperCase() + pokemon2Data.pokemon_v2_pokemon[0].name.slice(1)}</p>
                     <div className="w-full bg-gray-200 rounded-full h-4 border-2 border-gray-300">
                       <div
                         className="bg-green-500 rounded-full h-full transition-all duration-300"
@@ -231,7 +232,7 @@ const PokeStadium = () => {
                 {/* Pokemon 1 HP Bar (Bottom Left) - Adjusted width and positioning */}
                 <div className="absolute bottom-2 left-4 w-56">
                   <div className="bg-white rounded-lg p-2 shadow-md">
-                    <p className="font-bold mb-1 text-gray-800">{pokemon1Data.pokemon.name}</p>
+                    <p className="font-bold mb-1 text-gray-800">{pokemon1Data.pokemon_v2_pokemon[0].name.charAt(0).toUpperCase() + pokemon1Data.pokemon_v2_pokemon[0].name.slice(1)}</p>
                     <div className="w-full bg-gray-200 rounded-full h-4 border-2 border-gray-300">
                       <div
                         className="bg-green-500 rounded-full h-full transition-all duration-300"
@@ -247,8 +248,8 @@ const PokeStadium = () => {
                   {/* Pokemon 1 (Bottom Left) */}
                   <div className="absolute bottom-20 left-24">
                     <img
-                      src={pokemon1Data.pokemon.sprites?.back_default || ''}
-                      alt={pokemon1Data.pokemon.name}
+                      src={pokemon1Data.pokemon_v2_pokemon[0].pokemon_v2_pokemonsprites[0].sprites.back_default}
+                      alt={pokemon1Data.pokemon_v2_pokemon[0].name}
                       className={`w-40 h-40 object-contain transition-all duration-300
                         ${pokemon1Animating === 'attacking' ? 'animate-slide-right' : ''}
                         ${pokemon1Animating === 'hit' ? 'animate-damage-glow' : ''}
@@ -260,8 +261,8 @@ const PokeStadium = () => {
                   {/* Pokemon 2 (Top Right) */}
                   <div className="absolute top-20 right-24">
                     <img
-                      src={pokemon2Data.pokemon.sprites?.front_default || ''}
-                      alt={pokemon2Data.pokemon.name}
+                      src={pokemon2Data.pokemon_v2_pokemon[0].pokemon_v2_pokemonsprites[0].sprites.front_default}
+                      alt={pokemon2Data.pokemon_v2_pokemon[0].name}
                       className={`w-40 h-40 object-contain transition-all duration-300
                         ${pokemon2Animating === 'attacking' ? 'animate-slide-left' : ''}
                         ${pokemon2Animating === 'hit' ? 'animate-damage-glow' : ''}
@@ -282,7 +283,7 @@ const PokeStadium = () => {
                       onClick={() => handleAttack(1)}
                       disabled={currentTurn !== 1}
                     >
-                      {pokemon1Data.pokemon.name} Attack!
+                      {pokemon1Data.pokemon_v2_pokemon[0].name.charAt(0).toUpperCase() + pokemon1Data.pokemon_v2_pokemon[0].name.slice(1)} Attack!
                     </button>
                     <button
                       className={`bg-blue-500 text-white px-6 py-3 rounded-lg transition-all transform hover:-translate-y-1 font-bold
@@ -290,15 +291,15 @@ const PokeStadium = () => {
                       onClick={() => handleAttack(2)}
                       disabled={currentTurn !== 2}
                     >
-                      {pokemon2Data.pokemon.name} Attack!
+                      {pokemon2Data.pokemon_v2_pokemon[0].name.charAt(0).toUpperCase() + pokemon2Data.pokemon_v2_pokemon[0].name.slice(1)} Attack!
                     </button>
                   </div>
                 ) : (
                   <div className="text-center">
                     <h2 className="text-3xl font-bold mb-4 text-gray-800">
                       {pokemon1HP === 0 
-                        ? `${pokemon2Data.pokemon.name} Wins!` 
-                        : `${pokemon1Data.pokemon.name} Wins!`}
+                        ? `${pokemon2Data.pokemon_v2_pokemon[0].name} Wins!` 
+                        : `${pokemon1Data.pokemon_v2_pokemon[0].name} Wins!`}
                     </h2>
                   </div>
                 )}

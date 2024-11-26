@@ -1,7 +1,9 @@
 // Base interfaces for Pokemon data structure
 interface PokemonSprite {
-  front_default: string;
-  back_default: string;
+  sprites: {
+    front_default: string;
+    back_default: string;
+  };
 }
 
 // Common nested structures
@@ -11,20 +13,20 @@ interface NameOnly {
 
 // Pokemon component interfaces
 interface PokemonType {
-  type: NameOnly;
+  pokemon_v2_type: NameOnly;
 }
 
 interface PokemonStat {
   base_stat: number;
-  stat: NameOnly;
+  pokemon_v2_stat: NameOnly;
 }
 
 interface PokemonAbility {
-  ability: NameOnly;
+  pokemon_v2_ability: NameOnly;
 }
 
 interface PokemonMove {
-  move: NameOnly & {
+  pokemon_v2_move: NameOnly & {
     accuracy?: number;
     pp?: number;
     power?: number;
@@ -37,18 +39,18 @@ export interface Pokemon {
   name: string;
   height: number;
   weight: number;
-  sprites: PokemonSprite;
-  types: PokemonType[];
-  stats: PokemonStat[];
-  abilities: PokemonAbility[];
-  moves: PokemonMove[];
+  pokemon_v2_pokemonsprites: PokemonSprite[];
+  pokemon_v2_pokemontypes: PokemonType[];
+  pokemon_v2_pokemonstats: PokemonStat[];
+  pokemon_v2_pokemonabilities: PokemonAbility[];
+  pokemon_v2_pokemonmoves: PokemonMove[];
 }
 
 // Basic Pokemon info used in lists
 export interface PokemonBasicInfo {
   id: number;
   name: string;
-  image: string;
+  pokemon_v2_pokemonsprites: PokemonSprite[];
 }
 
 // Response and Query interfaces
@@ -62,15 +64,13 @@ export interface PokemonVars {
 }
 
 export interface PokemonListResponse {
-  pokemons: {
-    results: PokemonBasicInfo[];
-  };
+  pokemon_v2_pokemon: PokemonBasicInfo[];
 }
 
 // Consolidated Pokemon response interfaces
 export type SinglePokemonResponse = GetPokemonResponse;
 export interface GetPokemonResponse {
-  pokemon: Pokemon;
+  pokemon_v2_pokemon: Pokemon[];
 }
 
 // Props interfaces

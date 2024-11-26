@@ -25,6 +25,8 @@ function Pokedex() {
     variables: generationRanges[selectedGeneration as keyof typeof generationRanges]
   });
 
+  console.log(data?.pokemon_v2_pokemon[0].pokemon_v2_pokemonsprites[0].sprites);
+
   if (loading) return (
     <div className="min-h-screen bg-red-600 p-8">
       <div className="max-w-7xl mx-auto bg-red-500 rounded-lg shadow-lg p-6 border-8 border-red-700">
@@ -84,7 +86,7 @@ function Pokedex() {
             <p className="text-red-600 text-center font-bold">Error: {error}</p>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {data?.pokemons.results.map((pokemon) => {
+              {data?.pokemon_v2_pokemon.map((pokemon) => {
                 return (
                   <div 
                     key={pokemon.id} 
@@ -93,7 +95,7 @@ function Pokedex() {
                   >
                     <div className="relative pb-[100%]">
                       <img 
-                        src={pokemon.image} 
+                        src={pokemon.pokemon_v2_pokemonsprites[0].sprites.front_default} 
                         alt={pokemon.name}
                         className="absolute inset-0 w-full h-full object-contain p-2"
                       />
