@@ -9,9 +9,7 @@ query GetPokemons($limit: Int!, $offset: Int!) {
       sprites
     }
   }
-}
-
-`;
+}`;
 
 export const GET_POKEMON = gql`
 query GetPokemon($name: String!) {
@@ -48,6 +46,4 @@ query GetPokemon($name: String!) {
       }
     }
   }
-}
-`;
-
+}`;

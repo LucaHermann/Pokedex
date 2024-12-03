@@ -93,13 +93,13 @@ const PokeStadium = () => {
     if (attacker !== currentTurn) return;
 
     const damage = Math.floor(Math.random() * 20) + 10;
-    
+
     if (attacker === 1) {
       setPokemon1Animating('attacking');
       setTimeout(() => setPokemon2Animating('hit'), 400);
       setTimeout(() => setPokemon1Animating('idle'), 800);
       setTimeout(() => setPokemon2Animating('idle'), 900);
-      
+
       setPokemon2HP(prev => {
         const newHP = Math.max(0, prev - damage);
         if (newHP === 0) {
@@ -113,7 +113,7 @@ const PokeStadium = () => {
       setTimeout(() => setPokemon1Animating('hit'), 400);
       setTimeout(() => setPokemon2Animating('idle'), 800);
       setTimeout(() => setPokemon1Animating('idle'), 900);
-      
+
       setPokemon1HP(prev => {
         const newHP = Math.max(0, prev - damage);
         if (newHP === 0) {
@@ -123,12 +123,13 @@ const PokeStadium = () => {
         return newHP;
       });
     }
-    
-   setCurrentTurn(currentTurn === 1 ? 2 : 1);
+    setCurrentTurn(currentTurn === 1 ? 2 : 1);
   };
 
   console.log(pokemon1Data);
-  
+
+  console.log(pokemon2Data);
+
   return (
     <div className="min-h-screen bg-red-600 p-8">
       <div className="max-w-7xl mx-auto bg-red-500 rounded-lg shadow-lg p-6 border-8 border-red-700">
@@ -146,7 +147,7 @@ const PokeStadium = () => {
         <div className="bg-green-100 rounded-lg p-6 border-4 border-gray-800 shadow-inner">
           {/* Pokemon Selection */}
           <div className="flex flex-col items-center gap-4 mb-8">
-            <div className="flex justify-center gap-4">
+            <div className="flex flex-col md:flex-row justify-center gap-4">
               <input
                 type="text"
                 placeholder="Enter Pokemon 1 name"
@@ -249,13 +250,14 @@ const PokeStadium = () => {
                 <div className="absolute inset-0 flex items-center justify-center">
                   {/* Pokemon 1 (Bottom Left) */}
                   <div className="absolute bottom-20 left-24">
-                    <img
-                      src={pokemon1Data.pokemon_v2_pokemon[0].pokemon_v2_pokemonsprites[0].sprites.back_default}
+                     <img
+                      src={pokemon1Data.pokemon_v2_pokemon[0].pokemon_v2_pokemonsprites[0].sprites.back_default }
                       alt={pokemon1Data.pokemon_v2_pokemon[0].name}
                       className={`w-40 h-40 object-contain transition-all duration-300
                         ${pokemon1Animating === 'attacking' ? 'animate-slide-right' : ''}
                         ${pokemon1Animating === 'hit' ? 'animate-damage-glow' : ''}
                         ${pokemon1Animating === 'fainted' ? 'animate-faint' : ''}
+                        ${!pokemon1Data.pokemon_v2_pokemon[0].pokemon_v2_pokemonsprites[0].sprites.back_default ? 'scale-x-[-1]' : ''}
                       `}
                     />
                   </div>
@@ -282,7 +284,7 @@ const PokeStadium = () => {
                     {/* Message de tour */}
                     <div className="text-center mb-4">
                       <p className="text-xl font-bold text-gray-800">
-                        {currentTurn === 1 
+                        {currentTurn === 1
                           ? `What should ${pokemon1Data.pokemon_v2_pokemon[0].name.toUpperCase()} do?`
                           : `What should ${pokemon2Data.pokemon_v2_pokemon[0].name.toUpperCase()} do?`
                         }
@@ -315,8 +317,8 @@ const PokeStadium = () => {
                 ) : (
                   <div className="text-center">
                     <h2 className="text-3xl font-bold mb-4 text-gray-800">
-                      {pokemon1HP === 0 
-                        ? `${pokemon2Data.pokemon_v2_pokemon[0].name} Wins!` 
+                      {pokemon1HP === 0
+                        ? `${pokemon2Data.pokemon_v2_pokemon[0].name} Wins!`
                         : `${pokemon1Data.pokemon_v2_pokemon[0].name} Wins!`}
                     </h2>
                   </div>
