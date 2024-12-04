@@ -2,7 +2,8 @@ import { useQuery } from '@apollo/client';
 import { GET_POKEMON } from '../graphql/queries';
 import { PokecardProps, GetPokemonResponse } from '../graphql/types';
 import { getTypeColor } from '../utils/utils';
-function Pokecard({ pokemonName, onClose }: PokecardProps) {
+
+const Pokecard = ({ pokemonName, onClose }: PokecardProps) => {
   const { data, loading, error } = useQuery<GetPokemonResponse>(GET_POKEMON, {
     variables: { name: pokemonName.toLocaleLowerCase() },
   });

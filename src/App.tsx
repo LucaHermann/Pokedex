@@ -4,6 +4,7 @@ import Pokedex from './pages/Pokedex';
 import PokeStadium from './pages/PokeStadium';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import PokeBuilder from "./pages/PokeBuilder";
 
 // Configuration Apollo Client pour GraphQL
 const apolloClient = new ApolloClient({
@@ -24,6 +25,7 @@ function App() {
         <Routes>
           <Route path="/pokedex" element={<Pokedex />} />
           <Route path="/stadium" element={<PokeStadium />} />
+          <Route path="/builder" element={<PokeBuilder />} />
           <Route path="/" element={<Pokedex />} /> {/* Default route */}
         </Routes>
       </div>
