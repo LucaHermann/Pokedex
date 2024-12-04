@@ -37,7 +37,7 @@ query GetPokemon($name: String!) {
         name
       }
     }
-    pokemon_v2_pokemonmoves {
+    pokemon_v2_pokemonmoves(limit: 4∆) {
       pokemon_v2_move {
         name
         accuracy
