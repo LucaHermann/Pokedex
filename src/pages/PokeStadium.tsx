@@ -121,7 +121,7 @@ const PokeStadium = () => {
         name: attackingPokemon.pokemon_v2_pokemonmoves[moveIndex].pokemon_v2_move.name,
         power: attackingPokemon.pokemon_v2_pokemonmoves[moveIndex].pokemon_v2_move.power || 50,
         type: attackingPokemon.pokemon_v2_pokemonmoves[moveIndex].pokemon_v2_move.type,
-        type_id: attackingPokemon.pokemon_v2_pokemonmoves[moveIndex].pokemon_v2_move.type_id
+        type_id: attackingPokemon.pokemon_v2_pokemonmoves[moveIndex].pokemon_v2_move.type_id,
       }
     };
 
@@ -307,7 +307,7 @@ const PokeStadium = () => {
                 {/* Pokemon 2 HP Bar (Top Right) */}
                 <div className="absolute top-2 right-4 w-56">
                   <div className="bg-white rounded-lg p-2 shadow-md">
-                    <p className="font-bold mb-1 text-gray-800">{pokemon2Data.pokemon_v2_pokemon[0].name.charAt(0).toUpperCase() + pokemon2Data.pokemon_v2_pokemon[0].name.slice(1)}</p>
+                    <p className="font-bold mb-1 text-gray-800 capitalize">{pokemon2Data.pokemon_v2_pokemon[0].name}</p>
                     <div className="w-full bg-gray-200 rounded-full h-4 border-2 border-gray-300">
                       <div
                         className="bg-green-500 rounded-full h-full transition-all duration-300"
@@ -321,7 +321,7 @@ const PokeStadium = () => {
                 {/* Pokemon 1 HP Bar (Bottom Left) - Adjusted width and positioning */}
                 <div className="absolute bottom-2 left-4 w-56">
                   <div className="bg-white rounded-lg p-2 shadow-md">
-                    <p className="font-bold mb-1 text-gray-800">{pokemon1Data.pokemon_v2_pokemon[0].name.charAt(0).toUpperCase() + pokemon1Data.pokemon_v2_pokemon[0].name.slice(1)}</p>
+                    <p className="font-bold mb-1 text-gray-800 capitalize">{pokemon1Data.pokemon_v2_pokemon[0].name}</p>
                     <div className="w-full bg-gray-200 rounded-full h-4 border-2 border-gray-300">
                       <div
                         className="bg-green-500 rounded-full h-full transition-all duration-300"
@@ -399,10 +399,10 @@ const PokeStadium = () => {
                   </div>
                 ) : (
                   <div className="text-center">
-                    <h2 className="text-3xl font-bold mb-4 text-gray-800">
+                    <h2 className="text-3xl font-bold mb-4 text-gray-800 capitalize">
                       {pokemon1HP === 0
-                        ? `${pokemon2Data.pokemon_v2_pokemon[0].name.charAt(0).toUpperCase() + pokemon2Data.pokemon_v2_pokemon[0].name.slice(1)} wins!`
-                        : `${pokemon1Data.pokemon_v2_pokemon[0].name.charAt(0).toUpperCase() + pokemon1Data.pokemon_v2_pokemon[0].name.slice(1)} wins!`}
+                        ? `${pokemon2Data.pokemon_v2_pokemon[0].name} wins!`
+                        : `${pokemon1Data.pokemon_v2_pokemon[0].name} wins!`}
                     </h2>
                   </div>
                 )}
