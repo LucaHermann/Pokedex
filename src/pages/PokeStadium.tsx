@@ -4,25 +4,7 @@ import { GET_POKEMON } from '../graphql/queries';
 import { GetPokemonResponse } from '../graphql/types';
 import { PokeLoader }from '../components/PokeLoader';
 import { PokemonStats, PokemonMove, PokemonErrors, AnimationState, TurnState } from '../graphql/types';
-
-const calculateDamage = (
-  move: PokemonMove,
-  attacker: PokemonStats,
-  defender: PokemonStats,
-  typeEffectiveness: number
-) => {
-  const level = attacker.level || 50;
-  const variance = Math.random() * (1 - 0.85) + 0.85;
-  const movePower = move.pokemon_v2_move.power || 50;
-
-  const damage = Math.floor(
-    ((((2 * level) / 5 + 2) * movePower * (attacker.attack / defender.defense)) / 50 + 2) *
-    typeEffectiveness *
-    variance
-  );
-
-  return Math.max(1, damage);
-};
+import { calculateDamage, getTypeEffectiveness, getBattleMessage } from '../utils/utils';
 
 const PokeStadium = () => {
   const [pokemon1Name, setPokemon1Name] = useState<string>('');
@@ -121,7 +103,7 @@ const PokeStadium = () => {
         name: attackingPokemon.pokemon_v2_pokemonmoves[moveIndex].pokemon_v2_move.name,
         power: attackingPokemon.pokemon_v2_pokemonmoves[moveIndex].pokemon_v2_move.power || 50,
         type: attackingPokemon.pokemon_v2_pokemonmoves[moveIndex].pokemon_v2_move.type,
-        type_id: attackingPokemon.pokemon_v2_pokemonmoves[moveIndex].pokemon_v2_move.type_id
+        type_id: attackingPokemon.pokemon_v2_pokemonmoves[moveIndex].pokemon_v2_move.type_id,
       }
     };
 
@@ -183,37 +165,7 @@ const PokeStadium = () => {
 
     // Add battle message based on effectiveness
     setBattleMessage(getBattleMessage(typeEffectiveness, damage));
-
     setCurrentTurn(currentTurn === 1 ? 2 : 1);
-  };
-
-  // Helper functions
-  const getTypeEffectiveness = (moveType: number, defenderType: number): number => {
-    // Simplified type chart
-    const typeChart: Record<number, Record<number, number>> = {
-      // Fire
-      10: { 12: 0.5, 11: 2 }, // Fire moves: weak vs Water, strong vs Grass
-      // Water
-      11: { 10: 2, 12: 0.5 }, // Water moves: strong vs Fire, weak vs Grass
-      // Grass
-      12: { 11: 2, 10: 0.5 }, // Grass moves: strong vs Water, weak vs Fire
-      // Electric
-      13: { 11: 2, 5: 0 }, // Electric moves: strong vs Water, no effect on Ground
-      // Ground
-      5: { 13: 2, 3: 0.5 }, // Ground moves: strong vs Electric, weak vs Flying
-      // Flying
-      3: { 12: 2, 5: 0.5 }, // Flying moves: strong vs Grass, weak vs Ground
-    };
-
-    return typeChart[moveType]?.[defenderType] || 1;
-  };
-
-  const getBattleMessage = (effectiveness: number, damage: number): string => {
-    if (effectiveness > 1.5) return "It's super effective!";
-    if (effectiveness < 0.8) return "It's not very effective...";
-    if (damage < 10) return "A weak hit!";
-    if (damage > 30) return "A critical hit!";
-    return "Hit!";
   };
 
   return (
@@ -307,7 +259,7 @@ const PokeStadium = () => {
                 {/* Pokemon 2 HP Bar (Top Right) */}
                 <div className="absolute top-2 right-4 w-56">
                   <div className="bg-white rounded-lg p-2 shadow-md">
-                    <p className="font-bold mb-1 text-gray-800">{pokemon2Data.pokemon_v2_pokemon[0].name.charAt(0).toUpperCase() + pokemon2Data.pokemon_v2_pokemon[0].name.slice(1)}</p>
+                    <p className="font-bold mb-1 text-gray-800 capitalize">{pokemon2Data.pokemon_v2_pokemon[0].name}</p>
                     <div className="w-full bg-gray-200 rounded-full h-4 border-2 border-gray-300">
                       <div
                         className="bg-green-500 rounded-full h-full transition-all duration-300"
@@ -321,7 +273,7 @@ const PokeStadium = () => {
                 {/* Pokemon 1 HP Bar (Bottom Left) - Adjusted width and positioning */}
                 <div className="absolute bottom-2 left-4 w-56">
                   <div className="bg-white rounded-lg p-2 shadow-md">
-                    <p className="font-bold mb-1 text-gray-800">{pokemon1Data.pokemon_v2_pokemon[0].name.charAt(0).toUpperCase() + pokemon1Data.pokemon_v2_pokemon[0].name.slice(1)}</p>
+                    <p className="font-bold mb-1 text-gray-800 capitalize">{pokemon1Data.pokemon_v2_pokemon[0].name}</p>
                     <div className="w-full bg-gray-200 rounded-full h-4 border-2 border-gray-300">
                       <div
                         className="bg-green-500 rounded-full h-full transition-all duration-300"
@@ -383,7 +335,7 @@ const PokeStadium = () => {
                           <button
                             key={i}
                             className={`
-                              text-left px-4 py-3 rounded-lg
+                              text-left px-4 py-3 rounded-lg capitalize
                               ${currentTurn === 1 ? 'hover:bg-red-100' : 'hover:bg-blue-100'}
                               transition-colors duration-200
                               border-2 border-gray-200
@@ -399,10 +351,10 @@ const PokeStadium = () => {
                   </div>
                 ) : (
                   <div className="text-center">
-                    <h2 className="text-3xl font-bold mb-4 text-gray-800">
+                    <h2 className="text-3xl font-bold text-gray-800 capitalize">
                       {pokemon1HP === 0
-                        ? `${pokemon2Data.pokemon_v2_pokemon[0].name.charAt(0).toUpperCase() + pokemon2Data.pokemon_v2_pokemon[0].name.slice(1)} wins!`
-                        : `${pokemon1Data.pokemon_v2_pokemon[0].name.charAt(0).toUpperCase() + pokemon1Data.pokemon_v2_pokemon[0].name.slice(1)} wins!`}
+                        ? `${pokemon2Data.pokemon_v2_pokemon[0].name} wins!`
+                        : `${pokemon1Data.pokemon_v2_pokemon[0].name} wins!`}
                     </h2>
                   </div>
                 )}

@@ -37,6 +37,12 @@ export interface PokemonMove {
     power?: number;
     type_id: number;
     type: string;
+    pokemon_v2_moveeffect?: {
+      pokemon_v2_moveeffecteffecttexts: Array<{
+        effect: string;
+        short_effect: string;
+      }>;
+    };
   };
 }
 

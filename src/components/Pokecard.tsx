@@ -1,12 +1,12 @@
 import { useQuery } from '@apollo/client';
 import { GET_POKEMON } from '../graphql/queries';
 import { PokecardProps, GetPokemonResponse } from '../graphql/types';
-
+import { getTypeColor } from '../utils/utils';
 function Pokecard({ pokemonName, onClose }: PokecardProps) {
   const { data, loading, error } = useQuery<GetPokemonResponse>(GET_POKEMON, {
     variables: { name: pokemonName.toLocaleLowerCase() },
   });
-  
+
   // Close on backdrop click
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -19,137 +19,94 @@ function Pokecard({ pokemonName, onClose }: PokecardProps) {
   if (!data) return null;
 
 
-  const { id, name, height, weight, pokemon_v2_pokemonsprites, pokemon_v2_pokemontypes, pokemon_v2_pokemonstats, pokemon_v2_pokemonabilities, pokemon_v2_pokemonmoves } = data?.pokemon_v2_pokemon[0] || {};
+  const {
+    id, name, height,
+    weight, pokemon_v2_pokemonsprites,
+    pokemon_v2_pokemontypes, pokemon_v2_pokemonstats,
+    pokemon_v2_pokemonmoves
+  } = data?.pokemon_v2_pokemon[0] || {};
+
+  // Filter unique moves
+  const uniqueMoves = pokemon_v2_pokemonmoves.reduce((acc, curr) => {
+    const exists = acc.find(move => move.pokemon_v2_move.name === curr.pokemon_v2_move.name);
+    if (!exists) acc.push(curr);
+    return acc;
+  }, [] as typeof pokemon_v2_pokemonmoves);
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 z-50 overflow-y-auto"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
       onClick={handleBackdropClick}
     >
-      <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl max-w-md w-full p-6 relative transform transition-all shadow-lg border-8 border-yellow-400 my-8 max-h-[90vh] overflow-y-auto">
-        <div className="text-center relative top-0 bg-gradient-to-br from-yellow-50 to-yellow-100 pt-2 pb-4 z-10">
-          {/* Image container */}
-          <div className="relative mb-4">
-            <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent rounded-lg" />
-            <img
-              src={pokemon_v2_pokemonsprites[0].sprites.front_default}
-                alt={name}
-              className="w-48 h-48 mx-auto relative z-0 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg p-2"
-            />
-          </div>
-          
-          <h2 className="text-2xl font-bold capitalize mb-2 text-yellow-900">{name}</h2>
-            <p className="text-yellow-700 mb-4 font-semibold">#{id}</p>
+      <div className="bg-gradient-to-b from-yellow-300 to-yellow-400 rounded-xl w-[350px] p-6 relative
+        shadow-xl border-8 border-yellow-500 transform transition-all hover:scale-102">
+        {/* Card Header */}
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-xl font-bold capitalize">{name}</h2>
+          <span className="font-bold">
+            HP {pokemon_v2_pokemonstats.find(stat => stat.pokemon_v2_stat.name === 'hp')?.base_stat}
+          </span>
         </div>
 
-        {/* Scrollable content */}
-        <div className="relative">
+        {/* Pokemon Image */}
+        <div className="bg-gradient-to-br from-blue-200 via-green-100 to-yellow-100 rounded-lg p-2 mb-4">
+          <img
+            src={pokemon_v2_pokemonsprites[0].sprites.front_default}
+            alt={name}
+            className="w-full h-48 object-contain"
+          />
+        </div>
+
+        {/* Pokemon Info */}
+        <div className="space-y-4">
           {/* Types */}
-          <div className="flex justify-center gap-2 mb-4">
-              {pokemon_v2_pokemontypes.map(({ pokemon_v2_type }) => (
+          <div className="flex gap-2">
+            {pokemon_v2_pokemontypes.map(({ pokemon_v2_type }) => (
               <span
                 key={pokemon_v2_type.name}
-                className="px-3 py-1 rounded-full text-white text-sm capitalize shadow-inner"
-                style={{
-                    backgroundColor: getTypeColor(pokemon_v2_type.name),
-                  textShadow: '1px 1px 1px rgba(0,0,0,0.3)'
-                }}
+                className="px-3 py-1 rounded-full text-white text-sm capitalize"
+                style={{ backgroundColor: getTypeColor(pokemon_v2_type.name) }}
               >
                 {pokemon_v2_type.name}
               </span>
             ))}
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 gap-4 mb-4 bg-yellow-50/50 rounded-lg p-3">
-            <div>
-              <p className="text-yellow-800">Height</p>
-              <p className="font-bold text-yellow-900">{height / 10}m</p>
-            </div>
-            <div>
-              <p className="text-yellow-800">Weight</p>
-              <p className="font-bold text-yellow-900">{weight / 10}kg</p>
-            </div>
-          </div>
-
-          {/* Base Stats */}
-          <div className="space-y-2 bg-yellow-50/50 rounded-lg p-3">
-            {pokemon_v2_pokemonstats.map(({ base_stat, pokemon_v2_stat }) => (
-              <div key={pokemon_v2_stat.name} className="flex items-center">
-                <span className="w-24 text-left text-yellow-800 capitalize font-medium">
-                    {pokemon_v2_stat.name.replace('-', ' ')}:
-                </span>
-                <div className="flex-1 ml-4">
-                  <div className="h-2 bg-yellow-200 rounded-full">
-                    <div
-                      className="h-2 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500"
-                      style={{ width: `${(base_stat / 255) * 100}%` }}
-                    ></div>
-                  </div>
+          {/* Moves */}
+          <div className="space-y-2">
+            {uniqueMoves.map(({ pokemon_v2_move }) => (
+              <div
+                key={pokemon_v2_move.name}
+                className="bg-yellow-100 rounded p-2"
+              >
+                <div className="flex justify-between items-center">
+                  <span className="capitalize font-medium">
+                    {pokemon_v2_move.name.replace('-', ' ')}
+                  </span>
+                  <span className="font-bold">
+                    {pokemon_v2_move.power || '—'}
+                  </span>
                 </div>
-                <span className="ml-2 w-8 text-right text-yellow-900 font-bold">{base_stat}</span>
+                <p className="text-xs italic">
+                  {pokemon_v2_move.pokemon_v2_moveeffect?.pokemon_v2_moveeffecteffecttexts[0]?.short_effect ||
+                  'No effect description available'}
+                </p>
               </div>
             ))}
           </div>
 
-          {/* Abilities */}
-          <div className="mt-4">
-            <h3 className="font-bold mb-2 text-yellow-900">Abilities</h3>
-            <div className="flex flex-wrap justify-center gap-2">
-                {pokemon_v2_pokemonabilities.map(({ pokemon_v2_ability }) => (
-                <span
-                  key={pokemon_v2_ability.name}
-                  className="px-3 py-1 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-full text-sm capitalize text-yellow-900 shadow-sm"
-                >
-                  {pokemon_v2_ability.name.replace('-', ' ')}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Moves */}
-          <div className="mt-4">
-            <h3 className="font-bold mb-2 text-yellow-900">Moves </h3>
-            <div className="flex flex-wrap justify-center gap-2">
-              {pokemon_v2_pokemonmoves.slice(0, 4).map(({ pokemon_v2_move }, i) => (
-                <span
-                  key={i}
-                  className="px-3 py-1 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-full text-sm capitalize text-yellow-900 shadow-sm"
-                >
-                  {pokemon_v2_move.name.replace('-', ' ')}
-                </span>
-              ))}
-            </div>
+          {/* Pokemon Details */}
+          <div className="text-sm border-t border-yellow-600 pt-2">
+            <p>Height: {height / 10}m</p>
+            <p>Weight: {weight / 10}kg</p>
+            <p className="italic mt-1">
+              #{id}
+            </p>
           </div>
         </div>
       </div>
     </div>
   );
-}
-
-// Helper function to get color based on pokemon type
-function getTypeColor(type: string): string {
-  const colors: { [key: string]: string } = {
-    normal: '#A8A878',
-    fire: '#F08030',
-    water: '#6890F0',
-    electric: '#F8D030',
-    grass: '#78C850',
-    ice: '#98D8D8',
-    fighting: '#C03028',
-    poison: '#A040A0',
-    ground: '#E0C068',
-    flying: '#A890F0',
-    psychic: '#F85888',
-    bug: '#A8B820',
-    rock: '#B8A038',
-    ghost: '#705898',
-    dragon: '#7038F8',
-    dark: '#705848',
-    steel: '#B8B8D0',
-    fairy: '#EE99AC',
-  };
-  return colors[type] || '#777777';
 }
 
 export default Pokecard;

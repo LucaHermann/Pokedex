@@ -37,12 +37,19 @@ query GetPokemon($name: String!) {
         name
       }
     }
-    pokemon_v2_pokemonmoves(limit: 4∆) {
+    pokemon_v2_pokemonmoves(limit: 4) {
       pokemon_v2_move {
         name
         accuracy
         pp
         power
+        type_id
+        pokemon_v2_moveeffect {
+          pokemon_v2_moveeffecteffecttexts(where: {language_id: {_eq: 9}}) {
+            effect
+            short_effect
+          }
+        }
       }
     }
   }
