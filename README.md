@@ -29,3 +29,4 @@ This project is a Pokedex built with React, Apollo Client for GraphQL queries, a
 - Combat system
 - Better UI/UX
 - Animations
+- Translation system to be able to fetch pokemon in different languages

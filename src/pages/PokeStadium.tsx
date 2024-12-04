@@ -3,6 +3,26 @@ import { useQuery } from '@apollo/client';
 import { GET_POKEMON } from '../graphql/queries';
 import { GetPokemonResponse } from '../graphql/types';
 import { PokeLoader }from '../components/PokeLoader';
+import { PokemonStats, PokemonMove, PokemonErrors, AnimationState, TurnState } from '../graphql/types';
+
+const calculateDamage = (
+  move: PokemonMove,
+  attacker: PokemonStats,
+  defender: PokemonStats,
+  typeEffectiveness: number
+) => {
+  const level = attacker.level || 50;
+  const variance = Math.random() * (1 - 0.85) + 0.85;
+  const movePower = move.pokemon_v2_move.power || 50;
+
+  const damage = Math.floor(
+    ((((2 * level) / 5 + 2) * movePower * (attacker.attack / defender.defense)) / 50 + 2) *
+    typeEffectiveness *
+    variance
+  );
+
+  return Math.max(1, damage);
+};
 
 const PokeStadium = () => {
   const [pokemon1Name, setPokemon1Name] = useState<string>('');
@@ -12,13 +32,14 @@ const PokeStadium = () => {
   const [isBattleComplete, setIsBattleComplete] = useState<boolean>(false);
   const [pokemon1HP, setPokemon1HP] = useState<number>(100);
   const [pokemon2HP, setPokemon2HP] = useState<number>(100);
-  const [pokemon1Animating, setPokemon1Animating] = useState<string>('idle');
-  const [pokemon2Animating, setPokemon2Animating] = useState<string>('idle');
-  const [currentTurn, setCurrentTurn] = useState<1 | 2 | null>(null);
-  const [pokemonErrors, setPokemonErrors] = useState<{
-    pokemon1Error: boolean;
-    pokemon2Error: boolean;
-  }>({ pokemon1Error: false, pokemon2Error: false });
+  const [pokemon1Animating, setPokemon1Animating] = useState<AnimationState>('idle');
+  const [pokemon2Animating, setPokemon2Animating] = useState<AnimationState>('idle');
+  const [currentTurn, setCurrentTurn] = useState<TurnState>(null);
+  const [pokemonErrors, setPokemonErrors] = useState<PokemonErrors>({
+    pokemon1Error: false,
+    pokemon2Error: false
+  });
+  const [battleMessage, setBattleMessage] = useState<string>('');
 
   const { data: pokemon1Data, loading: loading1, refetch: pokemon1Query } = useQuery<GetPokemonResponse>(GET_POKEMON, {
     variables: { name: pokemon1Name.toLowerCase() },
@@ -89,17 +110,53 @@ const PokeStadium = () => {
     setPokemonErrors({ pokemon1Error: false, pokemon2Error: false });
   };
 
-  const handleAttack = (attacker: 1 | 2) => {
-    if (attacker !== currentTurn) return;
+  const handleAttack = (attacker: 1 | 2, moveIndex: number) => {
+    if (!pokemon1Data?.pokemon_v2_pokemon[0] || !pokemon2Data?.pokemon_v2_pokemon[0]) return;
 
-    const damage = Math.floor(Math.random() * 20) + 10;
-    
+    const attackingPokemon = attacker === 1 ? pokemon1Data.pokemon_v2_pokemon[0] : pokemon2Data.pokemon_v2_pokemon[0];
+    const defendingPokemon = attacker === 1 ? pokemon2Data.pokemon_v2_pokemon[0] : pokemon1Data.pokemon_v2_pokemon[0];
+
+    const move: PokemonMove = {
+      pokemon_v2_move: {
+        name: attackingPokemon.pokemon_v2_pokemonmoves[moveIndex].pokemon_v2_move.name,
+        power: attackingPokemon.pokemon_v2_pokemonmoves[moveIndex].pokemon_v2_move.power || 50,
+        type: attackingPokemon.pokemon_v2_pokemonmoves[moveIndex].pokemon_v2_move.type,
+        type_id: attackingPokemon.pokemon_v2_pokemonmoves[moveIndex].pokemon_v2_move.type_id
+      }
+    };
+
+    // Get Pokemon base stats
+    const attackerStats: PokemonStats = {
+      attack: attackingPokemon.pokemon_v2_pokemonstats.find(stat => stat.stat_id === 2)?.base_stat || 100,
+      defense: attackingPokemon.pokemon_v2_pokemonstats.find(stat => stat.stat_id === 3)?.base_stat || 100,
+      speed: attackingPokemon.pokemon_v2_pokemonstats.find(stat => stat.stat_id === 6)?.base_stat || 100,
+    };
+
+    const defenderStats: PokemonStats = {
+      attack: defendingPokemon.pokemon_v2_pokemonstats.find(stat => stat.stat_id === 2)?.base_stat || 100,
+      defense: defendingPokemon.pokemon_v2_pokemonstats.find(stat => stat.stat_id === 3)?.base_stat || 100,
+      speed: defendingPokemon.pokemon_v2_pokemonstats.find(stat => stat.stat_id === 6)?.base_stat || 100,
+    };
+
+    // Calculate type effectiveness (simplified)
+    const moveType = attackingPokemon.pokemon_v2_pokemonmoves[moveIndex].pokemon_v2_move.type_id;
+    const defenderType = defendingPokemon.pokemon_v2_pokemontypes[0].pokemon_v2_type.type_id;
+    const typeEffectiveness = getTypeEffectiveness(moveType, defenderType);
+
+    const damage = calculateDamage(
+      move,
+      attackerStats,
+      defenderStats,
+      typeEffectiveness
+    );
+
+    // Animation sequence
     if (attacker === 1) {
       setPokemon1Animating('attacking');
       setTimeout(() => setPokemon2Animating('hit'), 400);
       setTimeout(() => setPokemon1Animating('idle'), 800);
       setTimeout(() => setPokemon2Animating('idle'), 900);
-      
+
       setPokemon2HP(prev => {
         const newHP = Math.max(0, prev - damage);
         if (newHP === 0) {
@@ -113,22 +170,52 @@ const PokeStadium = () => {
       setTimeout(() => setPokemon1Animating('hit'), 400);
       setTimeout(() => setPokemon2Animating('idle'), 800);
       setTimeout(() => setPokemon1Animating('idle'), 900);
-      
+
       setPokemon1HP(prev => {
         const newHP = Math.max(0, prev - damage);
         if (newHP === 0) {
           setTimeout(() => setPokemon1Animating('fainted'), 1000);
           setIsBattleComplete(true);
-        }
+      }
         return newHP;
       });
     }
-    
-   setCurrentTurn(currentTurn === 1 ? 2 : 1);
+
+    // Add battle message based on effectiveness
+    setBattleMessage(getBattleMessage(typeEffectiveness, damage));
+
+    setCurrentTurn(currentTurn === 1 ? 2 : 1);
   };
 
-  console.log(pokemon1Data);
-  
+  // Helper functions
+  const getTypeEffectiveness = (moveType: number, defenderType: number): number => {
+    // Simplified type chart
+    const typeChart: Record<number, Record<number, number>> = {
+      // Fire
+      10: { 12: 0.5, 11: 2 }, // Fire moves: weak vs Water, strong vs Grass
+      // Water
+      11: { 10: 2, 12: 0.5 }, // Water moves: strong vs Fire, weak vs Grass
+      // Grass
+      12: { 11: 2, 10: 0.5 }, // Grass moves: strong vs Water, weak vs Fire
+      // Electric
+      13: { 11: 2, 5: 0 }, // Electric moves: strong vs Water, no effect on Ground
+      // Ground
+      5: { 13: 2, 3: 0.5 }, // Ground moves: strong vs Electric, weak vs Flying
+      // Flying
+      3: { 12: 2, 5: 0.5 }, // Flying moves: strong vs Grass, weak vs Ground
+    };
+
+    return typeChart[moveType]?.[defenderType] || 1;
+  };
+
+  const getBattleMessage = (effectiveness: number, damage: number): string => {
+    if (effectiveness > 1.5) return "It's super effective!";
+    if (effectiveness < 0.8) return "It's not very effective...";
+    if (damage < 10) return "A weak hit!";
+    if (damage > 30) return "A critical hit!";
+    return "Hit!";
+  };
+
   return (
     <div className="min-h-screen bg-red-600 p-8">
       <div className="max-w-7xl mx-auto bg-red-500 rounded-lg shadow-lg p-6 border-8 border-red-700">
@@ -146,7 +233,7 @@ const PokeStadium = () => {
         <div className="bg-green-100 rounded-lg p-6 border-4 border-gray-800 shadow-inner">
           {/* Pokemon Selection */}
           <div className="flex flex-col items-center gap-4 mb-8">
-            <div className="flex justify-center gap-4">
+            <div className="flex flex-col md:flex-row justify-center gap-4">
               <input
                 type="text"
                 placeholder="Enter Pokemon 1 name"
@@ -250,12 +337,13 @@ const PokeStadium = () => {
                   {/* Pokemon 1 (Bottom Left) */}
                   <div className="absolute bottom-20 left-24">
                     <img
-                      src={pokemon1Data.pokemon_v2_pokemon[0].pokemon_v2_pokemonsprites[0].sprites.back_default}
+                      src={pokemon1Data.pokemon_v2_pokemon[0].pokemon_v2_pokemonsprites[0].sprites.back_default }
                       alt={pokemon1Data.pokemon_v2_pokemon[0].name}
                       className={`w-40 h-40 object-contain transition-all duration-300
                         ${pokemon1Animating === 'attacking' ? 'animate-slide-right' : ''}
                         ${pokemon1Animating === 'hit' ? 'animate-damage-glow' : ''}
                         ${pokemon1Animating === 'fainted' ? 'animate-faint' : ''}
+                        ${!pokemon1Data.pokemon_v2_pokemon[0].pokemon_v2_pokemonsprites[0].sprites.back_default ? 'scale-x-[-1]' : ''}
                       `}
                     />
                   </div>
@@ -282,10 +370,7 @@ const PokeStadium = () => {
                     {/* Message de tour */}
                     <div className="text-center mb-4">
                       <p className="text-xl font-bold text-gray-800">
-                        {currentTurn === 1 
-                          ? `What should ${pokemon1Data.pokemon_v2_pokemon[0].name.toUpperCase()} do?`
-                          : `What should ${pokemon2Data.pokemon_v2_pokemon[0].name.toUpperCase()} do?`
-                        }
+                        {battleMessage || `What should ${currentTurn === 1 ? pokemon1Data.pokemon_v2_pokemon[0].name : pokemon2Data.pokemon_v2_pokemon[0].name} do?`}
                       </p>
                     </div>
 
@@ -305,7 +390,7 @@ const PokeStadium = () => {
                               disabled:opacity-50 disabled:cursor-not-allowed
                               font-pokemon text-lg
                             `}
-                            onClick={() => handleAttack(currentTurn as 1 | 2)}
+                            onClick={() => handleAttack(currentTurn as 1 | 2, i)}
                           >
                             ▶ {pokemon_v2_move.name.replace('-', ' ')}
                           </button>
@@ -315,9 +400,9 @@ const PokeStadium = () => {
                 ) : (
                   <div className="text-center">
                     <h2 className="text-3xl font-bold mb-4 text-gray-800">
-                      {pokemon1HP === 0 
-                        ? `${pokemon2Data.pokemon_v2_pokemon[0].name} Wins!` 
-                        : `${pokemon1Data.pokemon_v2_pokemon[0].name} Wins!`}
+                      {pokemon1HP === 0
+                        ? `${pokemon2Data.pokemon_v2_pokemon[0].name.charAt(0).toUpperCase() + pokemon2Data.pokemon_v2_pokemon[0].name.slice(1)} wins!`
+                        : `${pokemon1Data.pokemon_v2_pokemon[0].name.charAt(0).toUpperCase() + pokemon1Data.pokemon_v2_pokemon[0].name.slice(1)} wins!`}
                     </h2>
                   </div>
                 )}

@@ -9,9 +9,7 @@ query GetPokemons($limit: Int!, $offset: Int!) {
       sprites
     }
   }
-}
-
-`;
+}`;
 
 export const GET_POKEMON = gql`
 query GetPokemon($name: String!) {
@@ -39,7 +37,7 @@ query GetPokemon($name: String!) {
         name
       }
     }
-    pokemon_v2_pokemonmoves {
+    pokemon_v2_pokemonmoves(limit: 4∆) {
       pokemon_v2_move {
         name
         accuracy
@@ -48,6 +46,4 @@ query GetPokemon($name: String!) {
       }
     }
   }
-}
-`;
-
+}`;

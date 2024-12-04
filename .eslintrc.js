@@ -20,6 +20,8 @@ module.exports = {
     'prettier'
   ],
   rules: {
+    semi: ['error', 'always'],
+    indent: ['error', 2],
     'prettier/prettier': 'error',
   },
 };
